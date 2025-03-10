@@ -19,6 +19,7 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - cmake
     - ninja
     - pkg-config
@@ -31,6 +32,7 @@ outputs:
     requirements:
       build:
         - {{ compiler('c') }}
+        - {{ stdlib('c') }}
       host:
         - libusb
         - pthreads-win32  # [win]
@@ -53,6 +55,7 @@ outputs:
     requirements:
       build:
         - {{ compiler('c') }}
+        - {{ stdlib('c') }}
       host:
         - {{ pin_subpackage('libmirisdr' + libversion, exact=True) }}
       run:
@@ -86,6 +89,7 @@ outputs:
     requirements:
       build:
         - {{ compiler('c') }}
+        - {{ stdlib('c') }}
       host:
         - {{ pin_subpackage('libmirisdr' + libversion, exact=True) }}
       run:
