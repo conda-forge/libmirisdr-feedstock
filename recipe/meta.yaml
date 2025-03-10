@@ -14,28 +14,27 @@ source:
     - 0002-Rename-mirisdr.dll-to-mirisdr-4.dll-on-Windows.patch
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - cmake
     - ninja
     - pkg-config
   host:
     - libusb
-    - pthreads-win32  # [win]
+    - winpthreads-devel  # [win]
 
 outputs:
   - name: libmirisdr{{ libversion }}
     requirements:
       build:
         - {{ compiler('c') }}
+        - {{ stdlib('c') }}
       host:
         - libusb
-        - pthreads-win32  # [win]
-      run:
-        - pthreads-win32  # [win]
     files:
       - lib/libmirisdr.so.{{ libversion }}*  # [linux]
       - lib/libmirisdr.{{ libversion }}*.dylib  # [osx]
@@ -53,6 +52,7 @@ outputs:
     requirements:
       build:
         - {{ compiler('c') }}
+        - {{ stdlib('c') }}
       host:
         - {{ pin_subpackage('libmirisdr' + libversion, exact=True) }}
       run:
@@ -86,11 +86,12 @@ outputs:
     requirements:
       build:
         - {{ compiler('c') }}
+        - {{ stdlib('c') }}
       host:
         - {{ pin_subpackage('libmirisdr' + libversion, exact=True) }}
+        - winpthreads-devel  # [win]
       run:
         - {{ pin_subpackage('libmirisdr' + libversion, exact=True) }}
-        - pthreads-win32  # [win]
     files:
       - {{ library }}bin/miri_fm*
       - {{ library }}bin/miri_sdr*
@@ -98,11 +99,10 @@ outputs:
     test:
       commands:
         # verify that commands run
-        {% set cmds = ["miri_fm", "miri_sdr"] %}
-        {% for cmd in cmds %}
-        - {{ cmd }} -h || ec=$?; if [ $ec -gt 1 ]; then exit $ec; fi  # [not win]
-        - {{ cmd }} -h || if !ERRORLEVEL! LEQ 1 cmd /c "exit /b 0"  # [win]
-        {% endfor %}
+        - miri_fm -h || ec=$?; if [ $ec -gt 1 ]; then exit $ec; fi  # [not win]
+        - miri_sdr -h || ec=$?; if [ $ec -gt 1 ]; then exit $ec; fi  # [not win]
+        - miri_fm -h || if !ERRORLEVEL! LEQ 1 cmd /c "exit /b 0"  # [win]
+        - miri_sdr -h || if !ERRORLEVEL! LEQ 1 cmd /c "exit /b 0"  # [win]
 
         # verify that udev rule gets installed
         - test -f $PREFIX/lib/udev/rules.d/mirisdr.rules  # [linux]
