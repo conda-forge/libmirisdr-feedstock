@@ -35,7 +35,6 @@ outputs:
         - {{ stdlib('c') }}
       host:
         - libusb
-        - winpthreads-devel  # [win]
     files:
       - lib/libmirisdr.so.{{ libversion }}*  # [linux]
       - lib/libmirisdr.{{ libversion }}*.dylib  # [osx]
